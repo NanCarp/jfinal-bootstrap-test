@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <title>合同管理-新增</title>
+    <#include "../include/header.html">
+    <style type="text/css">
+        form { margin-top:20px;}
+        label { padding-top:6px;padding-right:0;}
+    </style>
+</head>
+
+<body style="width:85%;">
+    <form id="defaultForm" class="form-horizontal" role="form" enctype="multipart/form-data">
+        <#if record??>
+        <input hidden="" name="id" value="${record.id}" id="id">
+        <#else>
+        <div class="form-group">
+            <label class="col-xs-5 control-label text-right" for="name">客户名称：</label>
+            <div class="col-xs-6">
+                <input class="form-control" id="abbreviation" type="text" placeholder="客户名称"  name="company_name"/>
+            </div>
+        </div>
+        <div class="form-group">
+            <label class="col-xs-5 control-label text-right" for="file" style="padding-top:0;">附件：</label>
+            <div class="col-xs-6">
+                <input type="file" class="file" id="file" name="file" value="">
+                <div id="url"></div>
+            </div>
+        </div>
+        </#if>
+        <div class="form-group">
+            <label class="col-xs-5 control-label" for="v5"></label>
+            <div class="col-xs-6 ">
+                <button type="submit" class="btn btn-11" id="save">　保存　</button>
+            </div>
+        </div>
+    </form>
+    
+<script type="text/javascript">
+
+// 文件上传
+// 初始化fileinput控件（第一次初始化）
+//var fileList = new Array();//定义一个全局变量去接受文件名和id
+
+function initFileInput(ctrlName, uploadUrl) {
+    var control = $('#' + ctrlName);
+
+    control.fileinput({
+        language: 'zh', //设置语言
+        uploadUrl: uploadUrl, //上传的地址
+        allowedFileExtensions : ['jpg', 'png','gif'],//接收的文件后缀
+        showUpload: false, //是否显示上传按钮
+        showCaption: true,//是否显示标题
+        showRemove: true, //
+        //showUploadedThumbs: false,//
+        browseClass: "btn btn-primary", //按钮样式
+        dropZoneEnabled: false,//是否显示拖拽区域
+        showPreview :true,//是否显示预览
+        enctype: 'multipart/form-data',
+        previewFileIcon: "<i class='glyphicon glyphicon-king'></i>",
+    }).on("filebatchselected", function(event, files) {// 上传文件
+        $(this).fileinput("upload");
+    }).on("fileuploaded", function(event, data, previewId, index) {// 上传成功后的回调函数
+        /* if(data.response) {
+            var fileName = data.response.fileName;
+            //var fullName = fileName;
+            console.log("fileName: " + fileName);
+            var file = fileName.substring(0, fileName.indexOf("@"));
+            //fileList.push({fileName: fileName, keyId : previewId});
+            $('#url').append('<p><span _url="'+fileName+'" style="width: 90%;float: left;">'+file+'</span><a _url="'+fileName+'" href="javascript:;" onclick="del(this)" style="width: 10%;float: left;"><i class="fa fa-times" title="删除"></i></a></br></p>');
+        } */
+    }).on('filesuccessremove', function(event,id) {// 上传成功后，点击删除按钮的回调函数
+        console.log("filesuccessremove: " + id);
+    }).on('fileclear', function(event) {
+        console.log("fileclear");
+    });
+}
+
+initFileInput("file", "/test/bootstrapfileinput/uploadFile");
+
+
+/*// 文件上传，显示文件名
+$('body').delegate('#file','change',function(e){
+    //console.log($(this).val())//e就是你获取的file对象
+    var file = $(this).val();
+    var strFileName=file.replace(/^.+?\\([^\\]+?)(\.[^\.\\]*?)?$/gi,"$1");  //正则表达式获取文件名，不带后缀
+    var FileExt=file.replace(/.+\./,"");   //正则表达式获取后缀
+    var fileName = strFileName + "." + FileExt;
+    //console.log(fileName);
+    if ("." !== fileName) {
+        $('#url').empty().append('<p><span style="width: 90%;float: left;">'+fileName+'</span><a href="javascript:;" onclick="del(this)" style="width: 10%;float: left;"><i class="fa fa-times" title="删除"></i></a></br></p>');
+    } else {
+        $('#url').empty();
+    }
+})*/
+// 删除选中文件
+function del(_obj){
+    var fileName = $(_obj).attr('_url');
+    //console.log(fileName);
+    $.post("/insidejob/contract/deleteFile",{"fileName":fileName},function (data) {
+    	if (result.isSuccess) {
+            parent.layer.msg(result.tips, {time: 2000}, function(){
+                layer_close();
+                parent.parent.refresh_iframe();
+            });
+
+        } else {
+            parent.layer.msg(result.tips, {time: 2000});
+        }
+    });
+    $(_obj).parent('p').remove();
+    $("#file").val("");
+}
+// 回显文件
+/* $(function () {
+    var fileName = '${fileName!""}'.split(",");
+    if (fileName.length > 0) {
+        for(var i in fileName){
+            if(fileName[i] != ''){
+                var file = fileName[i].substring(0, fileName[i].indexOf("@"));
+                $('#url').append('<p><span _url="'+fileName[i]+'" style="width: 90%;float: left;">'+file+'</span><a _url="'+fileName[i]+'" href="javascript:;" onclick="del(this)" style="width: 10%;float: left;"><i class="fa fa-times" title="删除"></i></a></br></p>');
+            }
+        }
+    }
+}); */
+
+
+// 表单校验
+$('#defaultForm').bootstrapValidator({
+    message: 'This value is not valid',
+    feedbackIcons: {
+        valid: 'glyphicon glyphicon-ok',
+        invalid: 'glyphicon glyphicon-remove',
+        validating: 'glyphicon glyphicon-refresh'
+    },
+    fields: {
+        name: {
+        	validators: {
+                notEmpty:{
+                    message: '不能为空!'
+                },
+                regexp: {
+                    regexp: /^[a-zA-Z0-9_\s\u0391-\uFFE5]+$/,
+                    message: '不能包含特殊字符'
+                }, 
+                stringLength: {
+                    min: 0,
+                    max: 20,
+                    message: '不能超过 20 个字符',
+                }
+            }
+        }
+    },
+})
+.on('success.form.bv', function(e) {
+    e.preventDefault();
+    
+    var postData = $('form').serialize();
+    postData += '&fileName=' + fileName;
+    
+    $.post("/insidejob/contract/save", postData, function(result) {
+    	if (result.isSuccess) {
+            parent.layer.msg(result.tips, {time: 2000}, function(){
+                layer_close();
+                parent.parent.refresh_iframe();
+            });
+
+        } else {
+            parent.layer.msg(result.tips, {time: 2000});
+        }
+    });
+
+    /*
+    // 同步传输
+    var postdata = new FormData(document.getElementById('defaultForm'));
+    $.ajax({
+        url:"/supplier/quality/saveQuality",
+        type:"post",
+        data:postdata,
+        cache: false,
+        processData: false,
+        contentType: false,
+        success:function(result){
+            if (result) {
+                parent.layer.msg("保存成功", {time: 2000}, function(){
+                    layer_close();
+                    parent.parent.refresh_iframe();
+                });
+
+            } else {
+                parent.layer.msg('保存失败', {time: 2000});
+            }
+        },
+        error:function(e){
+            alert("网络错误，请重试！！");
+        }
+    });*/
+});
+
+</script>
+
+</body>
+
+</html>

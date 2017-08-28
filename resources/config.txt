@@ -1,0 +1,11 @@
+# 数据库相关配置
+jdbcUrl = jdbc:mysql://localhost/structure?characterEncoding=utf8&zeroDateTimeBehavior=convertToNull
+user = root
+password = 123456
+
+# 开发环境
+devMode=true
+
+#文件下载地址
+filepath = D:/upload/jfinal-bootstrap-test/test/
+

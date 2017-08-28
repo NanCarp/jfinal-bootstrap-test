@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>系统管理-角色管理</title>
+    <#include "../include/header.html">
+</head>
+<body style="background: #fff">
+	<div id="wrapper">
+	    <div class="panel-body" style="padding-bottom:0px;">
+	        <div class="panel panel-default">       
+	            <div class="panel-heading">                 
+	                <div class="container container-fluid" >                
+	                    <div class="row">  
+	                        <div class="col-sm-2 col-xs-2 head_2">
+	                            <input type="search" class="form-control" placeholder="输入角色" name="rolename" id="rolename" value="${rolename!''}">
+	                        </div>
+	                        <div class="col-sm-1 col-xs-12 head_1">
+	                            <button class="btn btn-primary" onclick="doQuery()">查询</button>
+	                        </div>
+	                        <div class="col-sm-2 col-xs-6 head_1">
+	                            <button class="btn btn-success" onclick="_add()">新增</button>
+	                        </div>
+	                        <div class="col-sm-2 col-xs-6 head_1">
+	                            <button class="btn btn-4" onclick="_delete()">删除</button>
+	                        </div>
+	                        <div class="col-sm-1 col-xs-4 head_1">
+	                            <button class="btn btn-9 " onclick="location.replace('/system/role')"><i class="fa fa-refresh"></i></button>
+	                        </div>
+	                    </div>
+	                </div>
+	            </div>
+	            <table id="tb_departments"></table>                   
+	        </div>
+	    </div>
+	</div>
+    
+    <script src="../../js/system/role.js"></script>
+
+</body>
+</html>

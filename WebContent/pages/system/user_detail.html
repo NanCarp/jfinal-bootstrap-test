@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <title>用户管理-添加用户管理</title>
+    <#include "../include/header.html">
+	<style>
+		label{padding-right: 0;padding-top: 6px}
+	</style>
+</head>
+<body style="width: 95%">
+<form class="form-horizontal" role="form" style="margin-top: 20px" id="defaultForm">
+    <#if user??>
+    <input hidden="" name="id" value="${user.id}">
+	<div class="form-group">
+	    <label class="col-xs-4 control-label text-right" for="account">账号：</label>
+	    <div class="col-xs-6 ">
+	        <input class="form-control text-left" id="account" type="text" placeholder="账号" name="account" value="${user.account}" readonly="readonly"/>
+	    </div>
+	</div>
+	<div class="form-group">
+        <label class="col-xs-4 control-label text-right" for="password">密码：</label>
+        <div class="col-xs-6">
+            <input class="form-control text-left" id="password" type="text" placeholder="123456" name="password"/>
+        </div>
+    </div>
+    <div class="form-group">
+        <label class="col-xs-4 control-label text-right" for="roleId">角色：</label>
+        <div class="col-xs-6">
+            <select class="form-control" id="roleId" name="roleId">
+                <option value="">请选择角色</option>
+                <#if roleList?? && roleList?size gt 0>
+                <#list roleList as role>
+                <option value="${role.id}" <#if role.id == user.role_id>selected</#if> >${role.role_type}</option>
+                </#list>
+                </#if>
+            </select>
+        </div>
+    </div>
+    <div class="form-group">
+        <label class="col-xs-4 control-label text-right" for="account">姓名：</label>
+        <div class="col-xs-6 ">
+            <input class="form-control text-left" id="account" type="text" placeholder="姓名" name="user_name" value="${user.user_name}"/>
+        </div>
+    </div>       
+    <#else>
+    <div class="form-group">
+        <label class="col-xs-4 control-label text-right" for="account">账号：</label>
+        <div class="col-xs-6 ">
+            <input class="form-control text-left" id="account" type="text" placeholder="账号" name="account"/>
+        </div>
+    </div>
+    <div class="form-group">
+        <label class="col-xs-4 control-label text-right" for="password">密码：</label>
+        <div class="col-xs-6">
+            <input class="form-control text-left" id="password" type="text" placeholder="123456" name="password"/>
+        </div>
+    </div>
+    <div class="form-group">
+        <label class="col-xs-4 control-label text-right" for="roleId">角色：</label>
+        <div class="col-xs-6">
+            <select class="form-control" id="roleId" name="roleId">
+                <option value="">请选择角色</option>
+                <#if roleList?? && roleList?size gt 0>
+                <#list roleList as role>
+                <option value="${role.id}">${role.role_type}</option>
+                </#list>
+                </#if>
+            </select>
+        </div>
+    </div>
+    <div class="form-group">
+        <label class="col-xs-4 control-label text-right" for="account">姓名：</label>
+        <div class="col-xs-6 ">
+            <input class="form-control text-left" id="account" type="text" placeholder="姓名" name="user_name"/>
+        </div>
+    </div>
+    </#if>
+    <div class="form-group">
+        <label class="col-xs-4 control-label" for="v"></label>
+        <div class="col-xs-6">
+            <button id="v" type="submit" class="btn btn-primary">　保存　</button>
+        </div>
+    </div>
+</form>
+
+<script>
+$(function () {
+    $('form').bootstrapValidator({　
+    	message: 'This value is not valid',
+    	feedbackIcons: {
+    	 	valid: 'glyphicon glyphicon-ok',
+    	 	invalid: 'glyphicon glyphicon-remove',
+    	 	validating: 'glyphicon glyphicon-refresh'
+    					},　　
+        fields: {
+        	account: {
+                message: '用户名验证失败',
+                validators: {
+                    notEmpty: {
+                        message: '账户不能为空'
+                    },
+            		regexp: {
+                    	regexp: /^[a-zA-Z0-9_\u4e00-\u9fa5\\s·]+$/,
+                    	message: '不能有特殊字符'
+            		}
+                }
+            },
+            password:{
+            	message:'验证失败',
+            	validators:{
+            		notEmpty: {
+                        message: '密码不能为空'
+                    },
+            	}
+            },            
+            companyId:{
+                message: '验证失败',
+                validators: {
+                    notEmpty: {
+                        message: '部门不能为空'
+                    }
+                }
+            },
+            roleId:{
+                message: '验证失败',
+                validators: {
+                    notEmpty: {
+                        message: '角色不能为空'
+                    }
+                }
+            },
+            user_name: {
+                message: '用户名验证失败',
+                validators: {
+                    notEmpty: {
+                        message: '姓名不能为空'
+                    },
+                    regexp: {
+                        regexp: /^[a-zA-Z0-9_\u4e00-\u9fa5\\s·]+$/,
+                        message: '不能有特殊字符'
+                    }
+                }
+            },
+        }
+	});
+})
+.on('success.form.bv', function(e) {
+    e.preventDefault();
+    $.post("/system/user/saveUser", $('#defaultForm').serialize(), function(result) {
+        if (result.isSuccess) {
+            parent.layer.msg("保存成功", {time: 2000}, function(){
+                layer_close();
+                parent.parent.refresh_iframe();
+            });
+
+        } else {
+        	
+            parent.layer.msg(result.tips, {time: 2000});
+        }
+
+    });
+});
+
+
+//取消
+$('#cancel').on("click",function() {
+    layer_close();
+});
+</script>
+</body>
+</html>
