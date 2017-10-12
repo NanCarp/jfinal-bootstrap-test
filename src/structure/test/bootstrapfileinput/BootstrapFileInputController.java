@@ -9,7 +9,7 @@ import com.jfinal.plugin.activerecord.Record;
 import com.jfinal.upload.UploadFile;
 
 public class BootstrapFileInputController extends Controller {
-    public void contract() {
+    public void index() {
         render("contract.html");
     }
     
